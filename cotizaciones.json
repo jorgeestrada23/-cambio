@@ -1,0 +1,10 @@
+{
+    "actualizadoEn": "26/10/2026",
+    "cotizaciones": [
+        { "codigo": "USD", "cotizacion": 1520 },
+        { "codigo": "EUR", "cotizacion": 1765 },
+        { "codigo": "BRL", "cotizacion": 285 },
+        { "codigo": "CLP", "cotizacion": 1.62 },
+        { "codigo": "UYU", "cotizacion": 37.5 }
+    ]
+}
