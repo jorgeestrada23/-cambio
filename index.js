@@ -1,26 +1,23 @@
-// ---------- CLASES ----------
 
-// Cada moneda que ofrece la casa de cambio
 class Moneda {
     constructor(id, codigo, nombre, cotizacion, stock) {
         this.id = id;
         this.codigo = codigo;
         this.nombre = nombre;
-        this.cotizacion = cotizacion; // pesos (ARS) por unidad
-        this.stock = stock;           // unidades disponibles para vender
+        this.cotizacion = cotizacion; 
+        this.stock = stock;           
     }
 
-    // convierte un monto en pesos a unidades de esta moneda
     convertir(montoARS) {
         return montoARS / this.cotizacion;
     }
 
-    // informa si hay stock suficiente para vender esa cantidad
+    
     hayStock(cantidad) {
         return this.stock >= cantidad;
     }
 
-    // modifica el estado: descuenta lo vendido del stock
+
     descontarStock(cantidad) {
         this.stock -= cantidad;
     }
@@ -56,9 +53,9 @@ const crearMonedasIniciales = () => [
     new Moneda(5, "UYU", "Peso uruguayo", 37, 80000)
 ];
 
-// ---------- LOCALSTORAGE ----------
+// LOCALSTORAGE 
 
-// recuperar: lee y convierte el JSON a objeto (null si no hay nada o esta danado)
+// recuperar
 function leerStorage(clave) {
     try {
         return JSON.parse(localStorage.getItem(clave));
@@ -68,7 +65,6 @@ function leerStorage(clave) {
 }
 
 // recuperar: los objetos guardados vuelven a ser instancias de las clases
-// (destructuring en los parametros y ternario si no hay nada guardado)
 function cargarMonedas() {
     const guardadas = leerStorage("monedas");
 
@@ -85,7 +81,7 @@ function cargarHistorial() {
         : [];
 }
 
-// almacenar / modificar: setItem pisa el valor anterior con el estado actual
+// almacenar / modificar
 function guardarDatos() {
     localStorage.setItem("monedas", JSON.stringify(monedas));
     localStorage.setItem("historial", JSON.stringify(historial));
@@ -96,7 +92,7 @@ let historial = cargarHistorial();
 
 let filtro = localStorage.getItem("filtro") ?? "";
 
-// doom
+
 const formCambio = document.getElementById("form-cambio");
 const selectMoneda = document.getElementById("select-moneda");
 const inputMonto = document.getElementById("monto");
@@ -111,8 +107,6 @@ const btnRestablecer = document.getElementById("btn-restablecer");
 const btnActualizar = document.getElementById("btn-actualizar");
 const estadoCarga = document.getElementById("estado-carga");
 
-// funciones auxiliares
-
 const buscarMoneda = (lista, codigo) => lista.find((moneda) => moneda.codigo === codigo);
 
 const formatearARS = (valor) => `$${valor.toLocaleString("es-AR")} ARS`;
@@ -124,7 +118,7 @@ function crearElemento(etiqueta, texto) {
     return elemento;
 }
 
-// Toastify: muestra el mensaje como aviso flotante (rojo si es un error, verde si no)
+
 function mostrarMensaje(texto) {
     const esError = texto.startsWith("Error");
 
@@ -190,12 +184,12 @@ function renderSelect() {
 
     selectMoneda.replaceChildren(...opciones);
 
-    // ternario: si la moneda guardada ya no existe, se elige la primera de la lista
+    // la moneda guardada ya no existe, se elige la primera de la lista
     const existe = buscarMoneda(monedas, seleccionada) !== undefined;
     selectMoneda.value = existe ? seleccionada : monedas[0]?.codigo ?? "";
 }
 
-// las 3 monedas de mayor cotizacion (se ordena una copia para no alterar la lista)
+// las 3 monedas de mayor cotizacion
 function renderTop3() {
     const top = [...monedas].sort((a, b) => b.cotizacion - a.cotizacion).slice(0, 3);
 
@@ -224,12 +218,10 @@ function renderTodo() {
     renderHistorial();
 }
 
-// ---------- ASINCRONIA ----------
-
-// archivo local con las cotizaciones (se puede cambiar por la URL de una API con el mismo formato)
+// archivo local con las cotizaciones 
 const URL_COTIZACIONES = "cotizaciones.json";
 
-// fetch: pide el archivo JSON y devuelve los datos ya convertidos a objeto
+// pide el archivo JSON y devuelve los datos ya convertidos a objeto
 async function obtenerCotizaciones() {
     const respuesta = await fetch(URL_COTIZACIONES, { cache: "no-store" });
 
@@ -319,7 +311,7 @@ selectMoneda.addEventListener("change", () => {
     localStorage.setItem("monedaSeleccionada", selectMoneda.value);
 });
 
-// Borrar: removeItem elimina solo el historial guardado
+
 btnBorrarHistorial.addEventListener("click", () => {
     localStorage.removeItem("historial");
     historial = [];
@@ -329,7 +321,7 @@ btnBorrarHistorial.addEventListener("click", () => {
     mostrarMensaje("Historial borrado.");
 });
 
-// Vaciar: clear elimina todo lo guardado y vuelve a los valores iniciales
+
 btnRestablecer.addEventListener("click", () => {
     localStorage.clear();
     monedas = crearMonedasIniciales();
@@ -344,7 +336,7 @@ btnRestablecer.addEventListener("click", () => {
     actualizarCotizaciones();
 });
 
-// Actualizar cotizaciones: await dentro de try/catch/finally (al cargar la pagina y con el boton)
+
 async function actualizarCotizaciones() {
     btnActualizar.disabled = true;
     estadoCarga.textContent = "Cargando cotizaciones...";
@@ -365,7 +357,6 @@ async function actualizarCotizaciones() {
         estadoCarga.textContent = `Cotizaciones actualizadas el ${actualizadoEn ?? "dia de hoy"}.`;
         mostrarMensaje("Cotizaciones actualizadas.");
     } catch (error) {
-        // TypeError = fallo de red (o index.html abierto con doble clic, donde el navegador bloquea fetch)
         const detalle = error instanceof TypeError
             ? "no hay conexion o no se pudo abrir el archivo (si abriste index.html con doble clic, usa Live Server)."
             : error.message;
@@ -383,7 +374,6 @@ buscador.value = filtro;
 renderTodo();
 actualizarCotizaciones();
 
-// setTimeout: 3 segundos despues de entrar muestra un consejo con datos del simulador
 setTimeout(() => {
     const [masAlta] = [...monedas].sort((a, b) => b.cotizacion - a.cotizacion);
 
